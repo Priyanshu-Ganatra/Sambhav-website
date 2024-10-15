@@ -1,0 +1,130 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Admin model
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id                 Int            @id @default(autoincrement())
+  name               String
+  buildingName       String
+  buildingImageUrl   String
+  centerImage        String?
+  buildingHoverImage String?
+  addressLine1       String?
+  addressLine2       String?
+  street             String?
+  landmark           String?
+  city               String?
+  state              String?
+  type               String?
+  status             String?
+  logoUrl            String?
+  tagLine            String?
+  shortDescription   String?
+  longDescription    String?
+  position           Int            @unique
+  createdAt          DateTime       @default(now())
+  projectImages      ProjectImage[]
+  projectData        projectData[]
+  amenities          Amenities[]
+  amenityImage       amenityImage[]
+}
+
+model Amenities {
+  id        Int     @id @default(autoincrement())
+  amenity   String
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model amenityImage {
+  id         Int     @id @default(autoincrement())
+  amenityUrl String
+  projectId  Int
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectImage {
+  id        Int     @id @default(autoincrement())
+  imageUrl  String
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// model ProjectVideo {
+//   id        Int     @id @default(autoincrement())
+//   projectId Int
+//   videoUrl  String
+//   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+// }
+
+model projectData {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  imageUrl    String
+  projectId   Int
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// About model
+model About {
+  id           Int      @id @default(autoincrement())
+  heading      String
+  content      String
+  iconBigUrl   String?
+  iconSmallUrl String?
+  createdAt    DateTime @default(now())
+}
+
+// About model
+model press {
+  id           Int      @id @default(autoincrement())
+  heading      String
+  content      String
+  redirection  String
+  imageUrl     String?
+  iconSmallUrl String?
+  createdAt    DateTime @default(now())
+}
+
+// Define a model for SocialMedia
+// Allowed values for the social field: facebook, instagram, twitter, linkedin, snapchat, tiktok, pinterest, youtube, reddit, tumblr, whatsapp, wechat, skype, telegram, discord, twitch, vimeo, flickr, medium, quora
+model social {
+  id          Int    @id @default(autoincrement())
+  socialMedia String
+  link        String
+}
+
+model newsletter {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  email     String
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  fullName  String
+  email     String
+  contact   String // Assuming contact is a phone number (stored as string)
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model cloudinaryPublicId {
+  id       Int    @id @default(autoincrement())
+  url      String @unique
+  publicId String @unique
+}

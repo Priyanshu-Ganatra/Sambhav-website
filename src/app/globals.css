@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary-col: #000000;
+    --secondary-col: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    scroll-behavior: smooth;
+    will-change: scroll-position;
+}
+
+.dark-theme {
+    background-color: var(--primary-col);
+    color: var(--secondary-col);
+}
+
+.light-theme {
+    background-color: var(--secondary-col);
+    color: var(--primary-col);
+}
+
+.transparent-theme {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.853), rgba(0, 0, 0, 0.57), transparent) !important;
+}
+
+.page-section {
+    position: relative;
+    left: 0;
+    right: 0;
+    margin: auto;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.max-page-width {
+    max-width: 1200px;
+}
+
+
+/* Project Page */
+.buildingImageContainer:hover .first-building-image {
+    opacity: 0;
+}
+
+.bldngCard:hover .bldgName {
+    /* opacity: 1; */
+}
+
+.main-project-display{
+    transition: 0.2s ease-in-out;
+}
+
+/* About us  */
+.customBorder {
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='500' ry='500' stroke='%23ABABABFF' stroke-width='1' stroke-dasharray='20%2c 14' stroke-dashoffset='100' stroke-linecap='round'/%3e%3c/svg%3e");
+    position: absolute;
+    height: 1000px;
+    width: 1000px;
+    top: 10px;
+    left: -600px;
+    top: -350px;
+}
+
+.disable-scroll {
+    overflow: hidden;
+}
+
+.smallIcon {
+    position: absolute;
+    height: 80px;
+    width: 80px;
+    border: 2px;
+    object-fit: contain;
+    right: -40px;
+    top: 0;
+    bottom: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 2px;
+    border-radius: 9999px;
+    /* for a circular shape */
+    z-index: 30;
+    border: 2px solid white;
+}
+
+@media (max-width: 999px) {
+    .customBorder {
+        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='500' ry='500' stroke='%23ABABABFF' stroke-width='1' stroke-dasharray='20%2c 14' stroke-dashoffset='100' stroke-linecap='round'/%3e%3c/svg%3e");
+        position: absolute;
+        height: 1000px;
+        width: 1000px;
+        top: 10px;
+        left: -640px;
+        top: -350px;
+    }
+
+    .smallIcon {
+        right: 20px;
+        height: 60px;
+        width: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .customBorder {
+        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='500' ry='500' stroke='%23ABABABFF' stroke-width='1' stroke-dasharray='20%2c 14' stroke-dashoffset='100' stroke-linecap='round'/%3e%3c/svg%3e");
+        left: 50px;
+        top: 0px;
+        bottom: 0;
+        height: 250px;
+        width: 250px;
+    }
+}
+
+.scrollbar-hide {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+}
+
+.scrollbar-hide::-webkit-scrollbar {    
+    display: none;
+    /* WebKit */
+}
