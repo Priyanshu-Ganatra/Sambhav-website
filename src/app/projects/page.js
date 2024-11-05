@@ -1,6 +1,5 @@
 "use client";
 import { Loader1, Loader2 } from "@/components/loader";
-import Header from "@/components/project_header";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -52,7 +51,7 @@ export default function ProjectPage() {
                     )}?project=${buildingName}_${city}`}
                     key={id + String(index)}
                   >
-                    <div className="project-img-container relative">
+                    <div onClick={() => localStorage.setItem('cameFrom', 'projects')} className="project-img-container relative">
                       {projectImages && projectImages.length > 0 ? (
                         <div className="w-full overflow-hidden">
                           <Image

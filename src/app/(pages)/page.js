@@ -121,7 +121,7 @@ export default function Home() {
   return (
     <>
       <main
-        className={`relative pt-24 h-full overflow-auto`}
+        className={`relative pt-28 h-full overflow-auto`}
         onWheel={handleScroll}
       >
         <div
@@ -145,7 +145,7 @@ export default function Home() {
                     href={`/projects/${btoa(id)}`}
                     className="project_card"
                   >
-                    <div className="project-card flex flex-col-reverse justify-center items-center md:items-start md:flex-row md:justify-center gap-3 bldngCard">
+                    <div onClick={()=>localStorage.setItem('cameFrom', 'home')} className="project-card flex flex-col-reverse justify-center items-center md:items-start md:flex-row md:justify-center gap-3 bldngCard">
                       <div className="flex gap-2 items-center md:flex-col w-full md:w-2/5 justify-end">
                         <div className="flex md:justify-end w-full">
                           <div className="flex justify-left md:justify-center flex-col text-left md:text-right">

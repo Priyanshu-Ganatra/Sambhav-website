@@ -18,6 +18,7 @@ export default function ExtraDetails({ moreProjectData }) {
                                             height={500}
                                             width={500}
                                             quality={100}
+                                            alt="Extra Details"
                                             src={data.imageUrl}
                                             className="object-contain className= w-full h-auto"
                                         />
@@ -30,6 +31,7 @@ export default function ExtraDetails({ moreProjectData }) {
                                             height={500}
                                             width={500}
                                             quality={100}
+                                            alt="Extra Details"
                                             src={data.imageUrl}
                                             className="object-contain className= w-full h-auto"
                                         />

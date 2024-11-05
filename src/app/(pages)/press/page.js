@@ -44,14 +44,15 @@ export default function Test() {
 
   return (
     <>
-      <main className="dark-theme pt-24 flex flex-col justify-center items-start gap-4 h-full overflow-auto text-white">
-        <div className="flex-1 mt-10 relative w-full min-h-screen h-full overflow-auto">
-          <div className="flex flex-col relative w-full">
+      <main className="dark-theme pt-24 flex flex-col justify-center items-start gap-4 h-[90%] overflow-auto text-white">
+        <div className="flex  md:items-center mt-10 relative w-full min-h-screen h-full overflow-auto justify-center">
+          <div className="flex flex-col justify-center relative w-full ">
             <AnimationPress
               pressReleaseData={pressReleaseData}
               currentIndex={currentIndex}
             />
           </div>
+
         </div>
         <Footer />
       </main>

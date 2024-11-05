@@ -87,6 +87,7 @@ model About {
   iconBigUrl   String?
   iconSmallUrl String?
   createdAt    DateTime @default(now())
+  position           Int            @unique
 }
 
 // About model
@@ -98,6 +99,7 @@ model press {
   imageUrl     String?
   iconSmallUrl String?
   createdAt    DateTime @default(now())
+  position           Int            @unique
 }
 
 // Define a model for SocialMedia

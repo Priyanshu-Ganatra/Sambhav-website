@@ -1,7 +1,8 @@
+import { limitWords } from "@/utils/helpers";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function AnimationAbout({ aboutData }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,6 +14,19 @@ export default function AnimationAbout({ aboutData }) {
   const [next, setNext] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+      if (window.innerWidth < 784) console.log('mobile')
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const memoizedAboutData = useMemo(
     () =>
@@ -133,7 +147,7 @@ export default function AnimationAbout({ aboutData }) {
   };
 
   return (
-    <div className="relative h-full">
+    <div className="relative md:mt-0 mt-20 h-full">
       {/* <div className="w-full h-[250px] md:w-[400px] md:h-[400px] absolute hidden md:block">
                 <div className="customBorder border-animation z-10"></div>
                 <div className="dark-theme relative bg-red-100 w-full h-full">
@@ -141,7 +155,7 @@ export default function AnimationAbout({ aboutData }) {
                         className="smallIcon dark-theme" />
                 </div>
             </div> */}
-      <div className="flex justify-between absolute items-end  h-[300px] md:h-full md:items-center  w-full z-20 px-2">
+      <div className="flex justify-between absolute items-end h-[300px] md:h-full md:items-center w-full z-0 px-2">
         <button
           onClick={handlePreviousDesktop}
           className="flex gap-1 items-center"
@@ -161,39 +175,35 @@ export default function AnimationAbout({ aboutData }) {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleSwipe}
             key={index}
-            className={`grid grid-cols-1 md:grid-cols-[40%_auto] gap-10 justify-stretch w-full items-center py-24 px-4 ${
-              index === currentIndex ? "content-animation-top" : "hidden"
-            }`}
+            className={`grid grid-cols-1 md:grid-cols-[40%_auto] z-1 justify-center w-full items-center pt-24 pb-4 px-4 ${index === currentIndex ? "content-animation-top" : "hidden"}`}
           >
             {/* About Image */}
-            <div className="relative h-[220px] w-full md:h-[300px] md:w-[300px] flex items-center justify-center self-start md:block">
+            <div className="relative h-[220px] w-full md:h-[450px] md:w-[450px] flex items-center justify-center self-start md:block">
               {iconBigUrl && (
                 <Image
                   src={iconBigUrl}
                   quality={100}
                   fill
-                  className={`object-contain dark-theme className= ${
-                    index === currentIndex ? "animate-image" : "hidden"
-                  }`}
+                  className={`object-contain dark-theme className= ${index === currentIndex ? "animate-image" : "hidden"
+                    }`}
                   alt=""
                 />
               )}
             </div>
             {/* About content */}
-            <div className="z-20 md:z-0 flex flex-col justify-center items-center w-full ">
+            <div className="z-20 md:z-0 flex flex-col justify-center items-center">
               <div
-                className={`${
-                  index === currentIndex
-                    ? "animate-text relative md:left-[10px] "
-                    : "hidden "
-                } `}
+                className={`flex flex-col gap-5 md:w-[500px] ${index === currentIndex
+                  ? "animate-text relative md:left-[10px] "
+                  : "hidden "
+                  } `}
               >
-                <h2 className="text-2xl font-semibold text-[#fef6ed] text-opacity-75 pb-3">
+                <h2 className="text-2xl font-bold text-[#fef6ed] mt-4 md:mt-0 break-words max-w-full text-opacity-75">
                   {heading}
                 </h2>
                 <p
-                  className="text-justify text-[#fef6ed] text-opacity-75 w-full"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  className="text-balance text-[#fef6ed] break-words max-w-full text-opacity-75"
+                  dangerouslySetInnerHTML={{ __html: content  }}
                 />
               </div>
             </div>

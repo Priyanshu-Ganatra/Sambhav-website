@@ -12,7 +12,7 @@ export default function Header({ theme = "dark-theme", hideLogo, backNav }) {
 
   return (
     <div
-      className={`fixed top-0 flex justify-between items-center left-0 right-0 m-auto w-full z-40 header mb-2 min-h-24`}
+      className={`fixed top-0 flex justify-between items-center left-0 right-0 m-auto w-full md:w-full z-40 header mb-2 min-h-14 bg-black`}
     >
       <div className="w-full page-section flex justify-between items-center">
         {backNav && (
@@ -28,9 +28,9 @@ export default function Header({ theme = "dark-theme", hideLogo, backNav }) {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -57,9 +57,8 @@ export default function Header({ theme = "dark-theme", hideLogo, backNav }) {
         )}
 
         <div
-          className={`header-links flex flex-col fixed w-full h-full top-0 left-0 items-center justify-center z-40 gap-5 ${
-            showLinks ? "left-0" : "left-[-150%]"
-          } transition-all duration-700 ease-in-out ${theme} bg-white `}
+          className={`header-links flex flex-col fixed w-full h-full top-0 left-0 items-center justify-center z-40 gap-5 ${showLinks ? "left-0" : "left-[-150%]"
+            } transition-all duration-700 ease-in-out ${theme} bg-white `}
         >
           <div className="flex flex-col gap-8 text-3xl font-semibold text-white">
             <Link

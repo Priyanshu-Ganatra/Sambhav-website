@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/components/project_header";
 import Slideshow from "./components/slideshow";
 import { useEffect, useState } from "react";
 import ProjectDetails from "./components/projectDetails";
@@ -41,33 +40,7 @@ export default function SingleProjectPage({ params }) {
 
   return (
     <>
-      <div className="absolute top-6 z-50 min-h-24 flex flex-col justify-center w-max">
-        <Link
-          title="Back to Project page"
-          href="/projects"
-          className="absolute top-1 left-4 md:left-40 text-white bg-black rounded-sm p-2 z-50 flex gap-1  opacity-50 hover:opacity-100"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            className="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M5 12l14 0" />
-            <path d="M5 12l6 6" />
-            <path d="M5 12l6 -6" />
-          </svg>
-        </Link>
-        {/* <Header theme="transparent-theme" /> */}
-      </div>
-      <main className="dark-theme pt-24 h-full overflow-auto">
+      <main className="dark-theme h-full overflow-auto">
         <div>
           <Slideshow images={projectImages} />
         </div>

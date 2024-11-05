@@ -69,11 +69,11 @@ const About = () => {
         fetchAboutData();
         toast.success("About release added successfully");
       } else {
-        // console.error('Failed to add about release');
+        console.error('Failed to add about release');
         toast.error("Failed to add about release");
       }
     } catch (error) {
-      // console.error('Error adding about release:', error);
+      console.error('Error adding about release:', error);
       toast.error("Failed to add about release");
     }
   };
@@ -103,6 +103,44 @@ const About = () => {
     } catch (error) {
       // console.error('Error deleting about:', error);
       toast.error("Error deleting about");
+    }
+  };
+
+  const updatePosition = async (
+    aboutId,
+    newPosition,
+    currentPosition,
+    aboutHeading
+  ) => {
+    const confirmed = confirm(
+      `Are you sure you want to change position of about '${aboutHeading}' ?`
+    );
+    if (!confirmed) {
+      return;
+    }
+    try {
+      const response = await fetch("/api/about/update/position", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: aboutId, newPosition, currentPosition }),
+        cache: "no-store",
+        next: { revalidate: 10 },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update about position.");
+      }
+      const data = await response.json();
+      console.log(data)
+      if (data.message) {
+        toast.success(data.message);
+        fetchAboutData();
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Failed to update about position.");
     }
   };
 
@@ -158,11 +196,67 @@ const About = () => {
                 />
                 <div className="flex gap-2 items-center justify-start mt-5">
                   <AboutUpdate id={about.id} fetchAboutData={fetchAboutData} />
+                  <div className="flex gap-2">
+                    <button
+                      title="Shift to left"
+                      onClick={() =>
+                        updatePosition(
+                          about.id,
+                          about.position - 1,
+                          about.position,
+                          about.heading
+                        )
+                      }
+                    >
+                      <svg
+                        className="rotate-180"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M7 4v16l13 -8z" />
+                      </svg>
+                    </button>
+                    {/* {about.position} */}
+                    <button
+                      title="Shift to Right"
+                      onClick={() =>
+                        updatePosition(
+                          about.id,
+                          about.position + 1,
+                          about.position,
+                          about.heading
+                        )
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M7 4v16l13 -8z" />
+                      </svg>
+                    </button>
+                  </div>
                   <button
                     onClick={() => handleDelete(about.id)}
                     className="text-red-500 text-right w-full flex justify-end text-xs"
                   >
-                    <Image src="/icons/trash_red.svg" height={15} width={15} alt=""/>
+                    <Image src="/icons/trash_red.svg" height={15} width={15} alt="" />
                     Delete
                   </button>
                 </div>

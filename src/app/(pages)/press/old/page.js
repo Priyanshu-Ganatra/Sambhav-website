@@ -111,9 +111,8 @@ export default function About() {
           {aboutData.map((content, index) => (
             <div
               key={index}
-              className={` flex items-center justify-center gap-10 md:flex-row w-full flex-col py-[10px] ${
-                currentIndex !== index && "hidden"
-              }`}
+              className={` flex items-center justify-center gap-10 md:flex-row w-full flex-col py-[10px] ${currentIndex !== index && "hidden"
+                }`}
             >
               <div ref={animatedContainer} className="px-[20px] w-full ">
                 <div className="w-full h-full relative ">
@@ -170,9 +169,9 @@ export default function About() {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-left"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />

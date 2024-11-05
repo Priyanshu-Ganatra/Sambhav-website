@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import dynamic from 'next/dynamic';
+import PressUpdate from './components/update';
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
 });
@@ -100,6 +101,44 @@ const Press = () => {
     }
   };
 
+  const updatePosition = async (
+    pressId,
+    newPosition,
+    currentPosition,
+    pressHeading
+  ) => {
+
+    const confirmed = confirm(
+      `Are you sure you want to change position of press '${pressHeading}' ?`
+    );
+    if (!confirmed) {
+      return;
+    }
+    try {
+      const response = await fetch("/api/press/update/position", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: pressId, newPosition, currentPosition }),
+        cache: "no-store",
+        next: { revalidate: 10 },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update press position.");
+      }
+      const data = await response.json();
+      if (data.message) {
+        fetchPressData();
+        toast.success(data.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Failed to update press position.");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Press Release</h1>
@@ -107,7 +146,7 @@ const Press = () => {
         <div>
           <h2 className="text-lg font-semibold mb-2">Press Release Content</h2>
           <div className='grid grid-cols-3 gap-5'>
-            {pressData.map((press) => (
+            {pressData.map((press, idx) => (
               <div key={press.id} className='shadow-md p-4 className= bg-gray-50 dark-theme'>
                 <h3 className='text-lg font-semibold line-clamp-1'>{press.heading}</h3>
                 <div className='my-5 w-full h-[150px]'>
@@ -117,18 +156,79 @@ const Press = () => {
                     width={150}
                     quality={100}
                     className='w-fill object-cover h-full w-full className='
+                    alt={`Press Image ${idx}`}
                   />
                 </div>
-                <p className='line-clamp-2' dangerouslySetInnerHTML={{__html: press.content}} />
+                <p className='line-clamp-2' dangerouslySetInnerHTML={{ __html: press.content }} />
                 <Link href={press.redirection} className='text-xs text-blue-500 underline line-clamp-1' target='_blank'>{press.redirection}</Link>
-                <button onClick={() => handleDelete(press.id)} className="text-red-500 pt-4 text-right w-full flex justify-end text-xs">
-                  <Image
-                    src='/icons/trash_red.svg'
-                    height={15}
-                    width={15}
-                  />
-                  Delete
-                </button>
+                <div className="flex gap-2 justify-evenly mt-4 items-center">
+                  <PressUpdate id={press.id} fetchPressData={fetchPressData} />
+                  <span className='flex'>
+                    <button
+                      title="Shift to left"
+                      onClick={() =>
+                        updatePosition(
+                          press.id,
+                          press.position - 1,
+                          press.position,
+                          press.heading
+                        )
+                      }
+                    >
+                      <svg
+                        className="rotate-180"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M7 4v16l13 -8z" />
+                      </svg>
+                    </button>
+                    {/* {press.position} */}
+                    <button
+                      title="Shift to Right"
+                      onClick={() =>
+                        updatePosition(
+                          press.id,
+                          press.position + 1,
+                          press.position,
+                          press.heading
+                        )
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M7 4v16l13 -8z" />
+                      </svg>
+                    </button>
+                  </span>
+                  <button onClick={() => handleDelete(press.id)} className="text-red-500 text-right w-full flex justify-end text-xs">
+                    <Image
+                      src='/icons/trash_red.svg'
+                      height={15}
+                      width={15}
+                      alt='Delete'
+                    />
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>

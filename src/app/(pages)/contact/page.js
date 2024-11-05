@@ -1,7 +1,7 @@
 "use client";
 import Footer from "@/components/footer";
 import Socials from "@/components/socialLinks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function Contact() {
@@ -19,6 +19,18 @@ export default function Contact() {
       [name]: value,
     }));
   };
+
+  const [isLowHeight, setIsLowHeight] = useState(false)
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsLowHeight(window.innerHeight < 764)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,11 +61,11 @@ export default function Contact() {
 
   return (
     <>
-      <main className="dark-theme pt-24 flex flex-col justify-center items-start gap-4 h-full overflow-auto">
-        <div className="flex-1 pt-24 relative w-full min-h-screen h-full overflow-auto">
-          <div className="page-section relative mx-auto !my-4 block md:grid grid-cols-[40%_60%] w-full gap-5">
+      <main className="dark-theme pt-24 flex flex-col justify-center items-center gap-4 h-full overflow-x-hidden overflow-y-auto">
+        <div className={`flex items-center pt-24 relative w-full min-h-screen h-full overflow-x-hidden overflow-y-auto md:mt-0 mt-20 ${isLowHeight && 'mt-64'}`}>
+          <div className="page-section relative mx-auto !my-4 block md:grid grid-cols-[40%_60%] w-full gap-28">
             <div className="flex gap-14 mb-10 px-5 pt-10 md:justify-start">
-              <div className="contact-details  flex flex-col gap-10">
+              <div className="contact-details flex flex-col gap-5 md:gap-10">
                 <div>
                   <label className="font-semibold">General Contact:</label>
                   <div className="text-xs font-thin hover:underline text-gray-100">
@@ -75,7 +87,7 @@ export default function Contact() {
                 <div>
                   <label className="font-semibold">Telephone:</label>
                   <div className="text-xs font-thin hover:underline text-gray-100">
-                    <a href="tel:+022 2436 6582">+022 2436 6582</a>
+                    <a href="tel:+91 022 6666 6191">+91 022 6666 6191</a>
                   </div>
                 </div>
 
@@ -84,6 +96,7 @@ export default function Contact() {
                   <div className="text-xs font-thin text-gray-100">
                     <a
                       target="_blank"
+                      className="underline"
                       href="https://www.google.com/maps?ll=19.001453,72.829486&z=10&t=m&hl=en&gl=IN&mapclient=embed&cid=16372566543277093295"
                     >
                       1301, 13th floor, Lodha Supremus,
@@ -96,13 +109,13 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="social-link  hidden md:flex gap-3 max-h-[250px] flex-wrap justify-start pr-5">
+                <div className="social-link md:flex gap-3 max-h-[250px] flex-wrap justify-start pr-5">
                   <Socials iconsColor="white" />
                 </div>
               </div>
             </div>
 
-            <div className=" md:border-l-[0.5px] px-5 md:px-[150px]">
+            <div className=" md:border-l-[0.5px] px-5 mt-2 md:px-[150px]">
               <form
                 className="grid pt-8 grid-cols-[20%_80%] gap-7 w-full"
                 onSubmit={handleSubmit}

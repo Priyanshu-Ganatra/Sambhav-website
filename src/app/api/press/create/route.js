@@ -19,7 +19,7 @@ export async function POST(req) {
 
     const headingWithUnderscore = heading.replace(' ', '_');
     const timestamp = Date.now();
-    
+
     await createFolderIfNotExists(`${process.cwd()}/public/assets/images/press`)
 
     // Save imageData image
@@ -62,6 +62,21 @@ export async function POST(req) {
     //   }
     // }
 
+    const maxPosition = await prisma.press
+      .findMany({
+        select: {
+          position: true,
+        },
+        orderBy: {
+          position: "desc",
+        },
+        take: 1,
+      })
+      .then((presses) => (presses.length > 0 ? presses[0].position : 0));
+
+    // Create a new press release with the next position
+    const newPosition = maxPosition + 1;
+
     // Create the press in the database
     const press = await prisma.press.create({
       data: {
@@ -69,6 +84,7 @@ export async function POST(req) {
         content,
         redirection,
         imageUrl,
+        position: newPosition,
       },
     });
 

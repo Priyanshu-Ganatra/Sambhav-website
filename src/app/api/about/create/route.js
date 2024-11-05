@@ -72,12 +72,28 @@ export async function POST(req) {
     //   }
     // }
 
+    const maxPosition = await prisma.about
+      .findMany({
+        select: {
+          position: true,
+        },
+        orderBy: {
+          position: "desc",
+        },
+        take: 1,
+      })
+      .then((abouts) => (abouts.length > 0 ? abouts[0].position : 0));
+
+    // Create a new about release with the next position
+    const newPosition = maxPosition + 1;
+
     // Create the about in the database
     const about = await prisma.about.create({
       data: {
         heading,
         content,
         iconBigUrl,
+        position: newPosition,
       },
     });
 

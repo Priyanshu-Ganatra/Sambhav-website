@@ -1,10 +1,23 @@
+
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 const Slideshow = ({ images }) => {
+  const [isMobile, setIsMobile] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0);
   const [timer, setTimer] = useState(null);
   const [loading, setLoading] = useState(true); // State to track loading status
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 784)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Function to move to the next slide
   function nextSlide() {
@@ -43,18 +56,19 @@ const Slideshow = ({ images }) => {
     <>
       {loading ? <div>Loading...</div> : ""} {/* Display loader while images are loading */}
       {!loading && images && images.length > 0 && (
-        <div className="min-h-[100vh]">
+        <div>
           <div className="relative h-full inset-0 flex justify-center z-0">
-            <div className='relative w-full h-[100vh]'>
-              <Image
+            <div className='relative w-full flex justify-center h-[50vh] md:h-[100vh]'>
+              <div></div>
+              <img
                 src={images[currentSlide]}
-                fill
-                quality={100}
+                // fill
+                // quality={100}
                 alt={`Slide ${currentSlide + 1}`}
-                className='z-[0] h-full w-auto md:w-full object-contain'
+                className='z-[0] w-auto h-full object-contain'
               />
               <button
-                className="absolute  top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-90 text-black rounded-full p-2"
+                className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-90 text-black rounded-full p-2"
                 onClick={prevSlide}
               >
                 <Image
@@ -78,14 +92,14 @@ const Slideshow = ({ images }) => {
             </div>
           </div>
           <div>
-            <div className="flex justify-center items-center flex-wrap gap-2 h-full mt-3 z-[10] overflow-x-auto">
+            <div className={`flex ${!isMobile && 'justify-center'} items-center flex-wrap gap-2 h-full mt-6 md:mt-3 z-[10] overflow-x-auto ${isMobile && 'max-w-screen h-20 flex-nowrap overflow-auto'}`}>
               {images.map((img, index) => (
-                <div className=' relative h-20 w-20' key={index}>
+                <div className='bg-red-500 relative h-20 w-20 min-w-20 hover:cursor-pointer' key={index}>
                   <Image
                     src={img}
                     fill
                     alt={`Thumbnail ${index + 1}`}
-                    className={`object-cover h-full w-full bg-slate-400 className= border-2 ${currentSlide === index ? 'border-red-500' : 'border-transparent'} `}
+                    className={`object-cover h-full w-full bg-slate-400 border-2 ${currentSlide === index ? 'border-red-500' : 'border-transparent'} `}
                     onClick={() => handleManualSlideChange(index)}
                   />
                 </div>

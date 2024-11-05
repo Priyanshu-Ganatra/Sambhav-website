@@ -15,6 +15,8 @@ export async function POST(req) {
       where: { username },
     });
 
+    console.log(admin)
+
     // If admin with the provided username does not exist
     if (!admin) {
       return NextResponse.json("Invalid credentials", { status: 401 });
