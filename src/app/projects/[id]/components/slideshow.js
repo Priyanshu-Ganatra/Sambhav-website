@@ -57,7 +57,7 @@ const Slideshow = ({ images }) => {
       {loading ? <div>Loading...</div> : ""} {/* Display loader while images are loading */}
       {!loading && images && images.length > 0 && (
         <div>
-          <div className="relative h-full inset-0 flex justify-center z-0">
+          <div className="relative h-full inset-0 flex justify-center z-0 mt-14">
             <div className='relative w-full flex justify-center h-[50vh] md:h-[100vh]'>
               <div></div>
               <img
