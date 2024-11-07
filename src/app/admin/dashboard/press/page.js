@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 
 import dynamic from 'next/dynamic';
@@ -11,6 +11,10 @@ const JoditEditor = dynamic(() => import("jodit-react"), {
 });
 
 const Press = () => {
+  const fileInputRef = useRef(null);
+  const [isAddingPressData, setIsAddingPressData] = useState(false);
+  const [msg, setMsg] = useState('Fetching data...');
+  const [isFetchingData, setIsFetchingData] = useState(false);
   const [pressData, setPressData] = useState([]);
   const [formData, setFormData] = useState({
     heading: '',
@@ -24,12 +28,16 @@ const Press = () => {
   }, []);
 
   const fetchPressData = async () => {
+    setIsFetchingData(true);
     try {
       const response = await fetch('/api/press/read', { cache: 'no-store', next: { revalidate: 10 } });
       const data = await response.json();
       setPressData(data.data);
     } catch (error) {
       // console.error('Error fetching press data:', error);
+    }
+    finally {
+      setIsFetchingData(false);
     }
   };
 
@@ -49,6 +57,7 @@ const Press = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsAddingPressData(true);
     if (!formData.imageData) {
       toast.warn("Please choose images")
       return
@@ -66,12 +75,23 @@ const Press = () => {
         body: formDataToSend,
       });
       const data = await response.json();
+      setMsg('Re-fetching data...')
       fetchPressData();
       // console.log(data)
-      toast.success('Press release added successfully');
+      toast.success('Press release data added successfully');
     } catch (error) {
       // console.error('Error adding press release:', error);
       toast.error('Failed to add press release');
+    }
+    finally {
+      setIsAddingPressData(false);
+      setFormData({
+        heading: '',
+        content: '',
+        redirection: '',
+        imageData: null,
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -89,6 +109,7 @@ const Press = () => {
         body: JSON.stringify({ id }),
       });
       if (response.ok) {
+        setMsg('Re-fetching data...')
         fetchPressData();
         toast.success('Press release deleted successfully');
       } else {
@@ -124,18 +145,22 @@ const Press = () => {
         cache: "no-store",
         next: { revalidate: 10 },
       });
-      if (!response.ok) {
-        throw new Error("Failed to update press position.");
-      }
       const data = await response.json();
+      if (!response.ok) {
+        if (data.message)
+          throw new Error(data.message);
+        else
+          throw new Error(data.error);
+      }
       if (data.message) {
+        setMsg('Re-fetching data...')
         fetchPressData();
         toast.success(data.message);
       } else {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      toast.error("Failed to update press position.");
+      toast.error(error.message);
     }
   };
 
@@ -145,6 +170,22 @@ const Press = () => {
       <div className="grid grid-cols-1 gap-4 ">
         <div>
           <h2 className="text-lg font-semibold mb-2">Press Release Content</h2>
+          {
+            isFetchingData && (
+              <div className={`flex items-center justify-center gap-2 ${pressData.length && 'mb-4'}`}>
+                <div
+                  className={`w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin`}
+                >
+                </div>
+                <p>{msg}</p>
+              </div>
+            )
+          }
+          {
+            !pressData.length && !isFetchingData && (
+              <p className="text-sm">No data available, add some data and it'll be shown here.</p>
+            )
+          }
           <div className='grid grid-cols-3 gap-5'>
             {pressData.map((press, idx) => (
               <div key={press.id} className='shadow-md p-4 className= bg-gray-50 dark-theme'>
@@ -286,6 +327,7 @@ const Press = () => {
                 onChange={handleFileChange}
                 accept=".jpg, .jpeg, .png, .webp, .gif"
                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                ref={fileInputRef}
               />
             </div>
             {/* <div>
@@ -299,7 +341,9 @@ const Press = () => {
                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
               />
             </div> */}
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded cursor-pointer">Add Press Release</button>
+            <button type="submit" disabled={isAddingPressData} className="bg-blue-500 disabled:cursor-not-allowed hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded cursor-pointer">
+              {isAddingPressData ? 'Adding...' : 'Add Press Release'}
+            </button>
           </form>
         </div>
       </div>

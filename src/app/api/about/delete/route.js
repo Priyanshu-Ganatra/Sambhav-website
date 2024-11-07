@@ -46,6 +46,25 @@ export async function POST(req) {
       },
     });
 
+    const allData = await prisma.about.findMany({
+      orderBy: {
+        position: 'asc',
+      },
+    })
+
+    allData.forEach(async (data, index) => {
+      await prisma.about.update({
+        where: {
+          id: data.id,
+        },
+        data: {
+          position: index + 1,
+        },
+      });
+    });
+
+    // console.log(allData);
+
     return NextResponse.json({ message: 'About data deleted successfully', status: 200 });
   } catch (error) {
     console.error('Error deleting about:', error);

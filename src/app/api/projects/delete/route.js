@@ -153,6 +153,23 @@ export async function POST(req) {
     });
     // console.log('Deleted project:', deletedProject);
 
+    const allData = await prisma.project.findMany({
+      orderBy: {
+        position: 'asc',
+      },
+    })
+
+    allData.forEach(async (data, index) => {
+      await prisma.project.update({
+        where: {
+          id: data.id,
+        },
+        data: {
+          position: index + 1,
+        },
+      });
+    });
+
     // console.log('Project deleted successfully');
     return NextResponse.json(
       { message: "Project deleted successfully", status: 200 },

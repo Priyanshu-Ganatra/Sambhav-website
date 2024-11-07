@@ -46,6 +46,23 @@ export async function POST(req) {
       },
     });
 
+    const allData = await prisma.press.findMany({
+      orderBy: {
+        position: 'asc',
+      },
+    })
+
+    allData.forEach(async (data, index) => {
+      await prisma.press.update({
+        where: {
+          id: data.id,
+        },
+        data: {
+          position: index + 1,
+        },
+      });
+    });
+
     return NextResponse.json({ message: 'Press release data deleted successfully', status: 200 });
   } catch (error) {
     console.error('Error deleting press release:', error);

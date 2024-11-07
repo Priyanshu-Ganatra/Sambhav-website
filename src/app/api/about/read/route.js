@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export async function GET(req) {
   try {
     const { query } = parse(req.url, true);
-    const about = await prisma.about.findMany();
+    const about = await prisma.about.findMany({ orderBy: [{ position: 'asc' }] });
     return NextResponse.json({ data: about, status: 200 });
   } catch (error) {
     console.error("Error fetching about:", error);

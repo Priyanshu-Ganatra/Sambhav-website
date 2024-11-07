@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import AboutUpdate from "./components/update";
 
@@ -11,7 +11,11 @@ const JoditEditor = dynamic(() => import("jodit-react"), {
 });
 
 const About = () => {
+  const fileInputRef = useRef(null);
   const [aboutData, setAboutData] = useState([]);
+  const [isAddingAboutUsData, setIsAddingAboutUsData] = useState(false);
+  const [isFetchingData, setIsFetchingData] = useState(false);
+  const [msg, setMsg] = useState('Fetching data...');
   const [formData, setFormData] = useState({
     heading: "",
     content: "",
@@ -23,7 +27,12 @@ const About = () => {
     fetchAboutData();
   }, []);
 
+  useEffect(() => {
+    console.log(aboutData)
+  }, [aboutData]);
+
   const fetchAboutData = async () => {
+    setIsFetchingData(true);
     try {
       const response = await fetch("/api/about/read", {
         cache: "no-store",
@@ -33,6 +42,9 @@ const About = () => {
       setAboutData(data.data);
     } catch (error) {
       console.error("Error fetching about data:", error);
+    }
+    finally {
+      setIsFetchingData(false);
     }
   };
 
@@ -53,6 +65,7 @@ const About = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setIsAddingAboutUsData(true);
     const formDataToSend = new FormData();
     formDataToSend.append("heading", formData.heading);
     formDataToSend.append("content", formData.content);
@@ -66,8 +79,9 @@ const About = () => {
         body: formDataToSend,
       });
       if (response.ok) {
+        setMsg('Re-fetching data...')
         fetchAboutData();
-        toast.success("About release added successfully");
+        toast.success("About data added successfully");
       } else {
         console.error('Failed to add about release');
         toast.error("Failed to add about release");
@@ -75,6 +89,15 @@ const About = () => {
     } catch (error) {
       console.error('Error adding about release:', error);
       toast.error("Failed to add about release");
+    }
+    finally {
+      setIsAddingAboutUsData(false);
+      setFormData({
+        heading: "",
+        content: "",
+        imageData: null,
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -94,6 +117,7 @@ const About = () => {
         body: JSON.stringify({ id }),
       });
       if (response.ok) {
+        setMsg('Re-fetching data...')
         fetchAboutData();
         toast.success("About us data deleted successfully");
       } else {
@@ -128,19 +152,23 @@ const About = () => {
         cache: "no-store",
         next: { revalidate: 10 },
       });
-      if (!response.ok) {
-        throw new Error("Failed to update about position.");
-      }
       const data = await response.json();
-      console.log(data)
+      if (!response.ok) {
+        if (data.message)
+          throw new Error(data.message);
+        else
+          throw new Error(data.error);
+      }
+      // console.log(data)
       if (data.message) {
+        setMsg('Re-fetching data...')
         toast.success(data.message);
         fetchAboutData();
       } else {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      toast.error("Failed to update about position.");
+      toast.error(error.message);
     }
   };
 
@@ -164,6 +192,22 @@ const About = () => {
       <div className="grid grid-cols-1 gap-4 ">
         <div>
           <h2 className="text-lg font-semibold mb-2">About us Content</h2>
+          {
+            isFetchingData && (
+              <div className={`flex items-center justify-center gap-2 ${aboutData.length && 'mb-4'}`}>
+                <div
+                  className="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"
+                >
+                </div>
+                <p>{msg}</p>
+              </div>
+            )
+          }
+          {
+            !aboutData.length && !isFetchingData && (
+              <p className="text-sm">No data available, add some data and it'll be shown here.</p>
+            )
+          }
           <div className="grid grid-cols-3 gap-5">
             {aboutData.map((about) => (
               <div
@@ -325,6 +369,7 @@ const About = () => {
                 onChange={handleFileChange}
                 accept=".jpg, .jpeg, .png, .webp, .gif"
                 className="border border-gray-300 rounded-md px-3 py-2 w-full"
+                ref={fileInputRef}
               />
             </div>
             {/* <div>
@@ -340,9 +385,10 @@ const About = () => {
             </div> */}
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded cursor-pointer"
+              disabled={isAddingAboutUsData}
+              className="bg-blue-500 hover:bg-blue-600 text-white disabled:cursor-not-allowed font-semibold py-2 px-4 rounded cursor-pointer"
             >
-              Add About Section
+              {isAddingAboutUsData ? "Adding..." : "Add About Us Data"}
             </button>
           </form>
         </div>

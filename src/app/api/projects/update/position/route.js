@@ -8,6 +8,25 @@ export async function POST(req) {
     try {
         const { id, newPosition, currentPosition } = await req.json();
 
+        console.log("id of project: ", id, "newPosition of project: ", newPosition, "currentPosition of project: ", currentPosition);
+
+        if (currentPosition === 1 && newPosition === 0) {
+            return NextResponse.json({ error: 'Already at the top position' }, { status: 400 });
+        }
+
+        const maxPosition = await prisma.project.findMany({
+            select: {
+                position: true,
+            },
+            orderBy: {
+                position: 'desc',
+            },
+        }).then(projects => (projects.length > 0 ? projects[0].position : 0));
+
+        if (newPosition > maxPosition) {
+            return NextResponse.json({ error: 'Already at the last position' }, { status: 400 });
+        }
+
         await prisma.$transaction(async (tx) => {
             // Find the project to be updated
             const project = await tx.project.findUnique({
@@ -17,14 +36,6 @@ export async function POST(req) {
             if (!project) {
                 return NextResponse.json({ error: 'Project not found' }, { status: 404 });
             }
-            const maxPosition = await prisma.project.findMany({
-                select: {
-                    position: true,
-                },
-                orderBy: {
-                    position: 'desc',
-                },
-            }).then(projects => (projects.length > 0 ? projects[0].position : 0));
 
             // Find the project at the new position
             const projectAtNewPosition = await tx.project.findUnique({
@@ -54,7 +65,7 @@ export async function POST(req) {
             });
         });
 
-        return NextResponse.json({ message: 'Project position updated successfully' });
+        return NextResponse.json({ message: 'Position updated successfully' });
     } catch (error) {
         console.error('Error updating project position:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

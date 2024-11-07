@@ -6,6 +6,7 @@ import Link from "next/link";
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
+  const [isFetchingData, setIsFetchingData] = useState(false);
 
   const deleteProject = async (projectId) => {
     const confirmed = window.confirm(
@@ -42,6 +43,7 @@ const ProjectsPage = () => {
   };
 
   const fetchProjects = async () => {
+    setIsFetchingData(true);
     try {
       const response = await fetch("/api/projects/get/all", {
         cache: "no-store",
@@ -52,6 +54,9 @@ const ProjectsPage = () => {
       setProjects(data);
     } catch (error) {
       console.error("Error fetching projects:", error);
+    }
+    finally {
+      setIsFetchingData(false);
     }
   };
 
@@ -77,18 +82,21 @@ const ProjectsPage = () => {
         cache: "no-store",
         next: { revalidate: 10 },
       });
-      if (!response.ok) {
-        throw new Error("Failed to update project position.");
-      }
       const data = await response.json();
+      if (!response.ok) {
+        if (data.message)
+          throw new Error(data.message);
+        else
+          throw new Error(data.error);
+      }
       if (data.message) {
-        // toast.success(data.message);
+        toast.success(data.message);
         fetchProjects();
       } else {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      toast.error("Failed to update project position.");
+      toast.error(error.message);
     }
   };
 
@@ -108,6 +116,22 @@ const ProjectsPage = () => {
           Add Project
         </Link>
       </div>
+      {
+        isFetchingData && (
+          <div className={`flex items-center justify-center gap-2 ${projects.length && 'mb-4'}`}>
+            <div
+              className="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"
+            >
+            </div>
+            <p>Fetching data...</p>
+          </div>
+        )
+      }
+      {
+        !projects.length && !isFetchingData && (
+          <p className="text-sm">No data available, add some data and it'll be shown here.</p>
+        )
+      }
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative ">
         {projects.map((project) => (
           <div
