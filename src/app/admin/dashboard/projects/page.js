@@ -7,6 +7,11 @@ import Link from "next/link";
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
   const [isFetchingData, setIsFetchingData] = useState(false);
+  const [msg, setMsg] = useState('Fetching data...');
+
+  useEffect(() => {
+    console.log(projects);
+  }, [projects]);
 
   const deleteProject = async (projectId) => {
     const confirmed = window.confirm(
@@ -32,6 +37,7 @@ const ProjectsPage = () => {
 
       const data = await response.json();
       if (data.status === 200) {
+        setMsg('Re-fetching data...');
         fetchProjects();
         toast.success("Project deleted Successfully");
       } else {
@@ -91,6 +97,7 @@ const ProjectsPage = () => {
       }
       if (data.message) {
         toast.success(data.message);
+        setMsg('Re-fetching data...');
         fetchProjects();
       } else {
         toast.error("Something went wrong");
@@ -118,125 +125,127 @@ const ProjectsPage = () => {
       </div>
       {
         isFetchingData && (
-          <div className={`flex items-center justify-center gap-2 ${projects.length && 'mb-4'}`}>
+          <div className={`flex items-center justify-center gap-2 ${projects?.length && 'mb-4'}`}>
             <div
               className="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"
             >
             </div>
-            <p>Fetching data...</p>
+            <p>{msg}</p>
           </div>
         )
       }
       {
-        !projects.length && !isFetchingData && (
+        !isFetchingData && !projects?.length && (
           <p className="text-sm">No data available, add some data and it'll be shown here.</p>
         )
       }
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative ">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className="bg-white shadow-2xl rounded-md overflow-hidden pt-4 dark-theme w-full"
-          >
-            <Link
-              href={`/admin/dashboard/projects/edit/${project.id}`}
-              className="w-full"
+      {(!isFetchingData && projects?.length) ?
+        (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative ">
+          {projects?.map((project) => (
+            <div
+              key={project.id}
+              className="bg-white shadow-2xl rounded-md overflow-hidden pt-4 dark-theme w-full"
             >
-              <div className="relative overflow-hidden flex flex-col gap-0 w-full">
-                <div className="flex-1 relative w-full h-full overflow-hidden m-auto">
-                  <Image
-                    src={project.logoUrl}
-                    alt={project.name}
-                    className="w-full max-h-40 object-contain"
-                    width={300}
-                    height={200}
-                    unoptimized
-                  />
-                </div>
-                <div className="p-4 flex-1">
-                  <h2 className="text-lg font-semibold mb-2">{project.name}</h2>
-                  <p
-                    className="text-sm text-gray-100 text-justify line-clamp-3"
-                    dangerouslySetInnerHTML={{
-                      __html: project.shortDescription,
-                    }}
-                  ></p>
-                </div>
-              </div>
-            </Link>
-            <div className="flex items-center justify-between p-4">
-              <div className="flex gap-2">
-                <button
-                  title="Shift to left"
-                  onClick={() =>
-                    updatePosition(
-                      project.id,
-                      project.position - 1,
-                      project.position,
-                      project.name
-                    )
-                  }
-                >
-                  <svg
-                    className="rotate-180"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M7 4v16l13 -8z" />
-                  </svg>
-                </button>
-                {/* {project.position} */}
-                <button
-                  title="Shift to Right"
-                  onClick={() =>
-                    updatePosition(
-                      project.id,
-                      project.position + 1,
-                      project.position,
-                      project.name
-                    )
-                  }
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M7 4v16l13 -8z" />
-                  </svg>
-                </button>
-              </div>
-              <button
-                onClick={() => deleteProject(project.id)}
-                className="text-sm text-right w-full text-red-500 flex justify-end items-end"
+              <Link
+                href={`/admin/dashboard/projects/edit/${project.id}`}
+                className="w-full"
               >
-                <Image
-                  src="/icons/trash_red.svg"
-                  height={20}
-                  width={20}
-                  alt="trash"
-                />
-                Delete
-              </button>
+                <div className="relative overflow-hidden flex flex-col gap-0 w-full">
+                  <div className="flex-1 relative w-full h-full overflow-hidden m-auto">
+                    <Image
+                      src={project.logoUrl}
+                      alt={project.name}
+                      className="w-full max-h-40 object-contain"
+                      width={300}
+                      height={200}
+                      unoptimized
+                    />
+                  </div>
+                  <div className="p-4 flex-1">
+                    <h2 className="text-lg font-semibold mb-2">{project.name}</h2>
+                    <p
+                      className="text-sm text-gray-100 text-justify line-clamp-3"
+                      dangerouslySetInnerHTML={{
+                        __html: project.shortDescription,
+                      }}
+                    ></p>
+                  </div>
+                </div>
+              </Link>
+              <div className="flex items-center justify-between p-4">
+                <div className="flex gap-2">
+                  <button
+                    title="Shift to left"
+                    onClick={() =>
+                      updatePosition(
+                        project.id,
+                        project.position - 1,
+                        project.position,
+                        project.name
+                      )
+                    }
+                  >
+                    <svg
+                      className="rotate-180"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M7 4v16l13 -8z" />
+                    </svg>
+                  </button>
+                  {/* {project.position} */}
+                  <button
+                    title="Shift to Right"
+                    onClick={() =>
+                      updatePosition(
+                        project.id,
+                        project.position + 1,
+                        project.position,
+                        project.name
+                      )
+                    }
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M7 4v16l13 -8z" />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  onClick={() => deleteProject(project.id)}
+                  className="text-sm text-right w-full text-red-500 flex justify-end items-end"
+                >
+                  <Image
+                    src="/icons/trash_red.svg"
+                    height={20}
+                    width={20}
+                    alt="trash"
+                  />
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>) : null
+      }
     </div>
   );
 };
