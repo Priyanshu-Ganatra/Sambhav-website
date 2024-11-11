@@ -20,18 +20,6 @@ export default function Contact() {
     }));
   };
 
-  const [isLowHeight, setIsLowHeight] = useState(false)
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsLowHeight(window.innerHeight < 764)
-    }
-
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,8 +48,8 @@ export default function Contact() {
   };
 
   return (
-    <main className="dark-theme pt-24 flex flex-col justify-center items-center gap-4 h-full overflow-y-auto overflow-x-hidden">
-      <div className={`flex items-center pt-24 relative w-full md:mt-0 mt-20 ${isLowHeight && 'mt-64'}`}>
+    <main className="dark-theme pt-28 flex flex-col justify-center items-center gap-4 min-h-screen overflow-y-auto overflow-x-hidden">
+      <div className={`flex items-center relative w-full md:mt-0 my-auto`}>
         <div className="page-section relative mx-auto !my-4 block md:grid grid-cols-[40%_60%] w-full gap-28">
           <div className="flex gap-14 mb-10 px-5 pt-10 md:justify-start">
             <div className="contact-details flex flex-col gap-5 md:gap-10">

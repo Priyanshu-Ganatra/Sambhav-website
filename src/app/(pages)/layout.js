@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <div className="dark-theme h-screen overflow-hidden flex flex-col gap-4">
+    <div className="dark-theme h-screen overflow-auto flex flex-col gap-4">
       <Header />
       <div className="flex-1 min-h-screen">{children}</div>
 
