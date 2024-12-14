@@ -20,6 +20,7 @@ export default function Home() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch projects data
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -31,6 +32,7 @@ export default function Home() {
         setProjects(data);
         setLoading(false);
       } catch (error) {
+        console.error("Error fetching projects:", error);
         setLoading(false);
       }
     };
@@ -38,49 +40,28 @@ export default function Home() {
     fetchProjects();
   }, []);
 
-  // const handleScrollOG = () => {
-  //   try {
-  //     const container = containerRef.current;
-  //     const containerHeight = container.clientHeight;
-  //     const scrollTop = container.scrollTop;
-  //     const containerPosition = container?.offsetTop - scrollTop;
-  //     const distanceFromCenter = Math.abs(containerPosition - containerHeight);
-  //     const scale = 1 - Math.min(distanceFromCenter / containerHeight, 0.1);
-  //     const cards = gsap.utils.toArray(".project_card");
+  // Restore scroll position
+  useEffect(() => {
+    const restoreScrollPosition = () => {
+      if (containerRef.current) {
+        const savedScrollPosition = localStorage.getItem("scrollPosition");
+        if (savedScrollPosition) {
+          containerRef.current.scrollTo(0, parseInt(savedScrollPosition, 10));
+          setScrollPosition(parseInt(savedScrollPosition, 10));
+        }
+      }
+    };
 
-  //     gsap.set(container, {
-  //       scale: scale,
-  //       duration: 0.3,
-  //       delay: -0.3,
-  //       ease: "power2.out",
-  //       start: "top top",
-  //       end: containerHeight - 400,
-  //       scrub: true,
-  //       pin: true,
-  //       pinSpacing: false,
-  //       snap: {
-  //         snapTo: 1 / (cards?.length - 1),
-  //         duration: 0.3,
-  //         delay: 0,
-  //       },
-  //     });
+    // Ensure DOM rendering before restoring scroll
+    const timeout = setTimeout(restoreScrollPosition, 0);
+    return () => clearTimeout(timeout);
+  }, [loading]);
 
-  //     clearTimeout(scrollTimeoutRef.current);
-
-  //     scrollTimeoutRef.current = setTimeout(() => {
-  //       gsap.to(container, {
-  //         scale: 1,
-  //         duration: 0.1,
-  //         ease: "power2.out",
-  //       });
-  //     }, 300);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
+  // Handle scroll events
   const handleScroll = () => {
     const container = containerRef.current;
+    if (!container) return;
+
     const containerHeight = container.clientHeight;
     const scrollTop = container.scrollTop;
     const distanceFromCenter = Math.abs(containerHeight / 2 - scrollTop);
@@ -92,11 +73,11 @@ export default function Home() {
       ease: "power2.out",
     });
 
-    const scrollY = window.scrollY;
-    const dp = Math.abs(scrollY - scrollPosition);
-    const dt = performance.now() - scrollPosition;
-    setScrollSpeed(dp / dt / 50);
-    setScrollPosition(scrollY);
+    const currentScrollPosition = container.scrollTop;
+    const deltaPosition = Math.abs(currentScrollPosition - scrollPosition);
+    const deltaTime = performance.now();
+    setScrollSpeed(deltaPosition / deltaTime / 50);
+    setScrollPosition(currentScrollPosition);
 
     clearTimeout(scrollTimeoutRef.current);
 
@@ -108,6 +89,8 @@ export default function Home() {
       });
       setScrollSpeed(0);
     }, 300);
+
+    localStorage.setItem("scrollPosition", currentScrollPosition);
   };
 
   if (loading) {
@@ -121,70 +104,69 @@ export default function Home() {
   return (
     <>
       <main
-        className={`relative pt-28 h-full overflow-auto`}
-        onWheel={handleScroll}
+        className="relative pt-28 h-full overflow-auto"
+        onScroll={handleScroll}
+        ref={containerRef}
       >
-        <div
-          className="page-section grid grid-cols-1 gap-10 md:gap-5 main-project-display will-change-transform origin-center"
-          ref={containerRef}
-        >
-          {Array.isArray(projects)
-            ? projects?.map(
-                (
-                  {
-                    id,
-                    buildingImageUrl,
-                    buildingHoverImage,
-                    buildingName,
-                    city,
-                  },
-                  index
-                ) => (
-                  <Link
-                    key={index}
-                    href={`/projects/${btoa(id)}`}
-                    className="project_card"
+        <div className="page-section grid grid-cols-1 gap-10 md:gap-5 main-project-display will-change-transform origin-center">
+          {Array.isArray(projects) &&
+            projects.map(
+              (
+                {
+                  id,
+                  buildingImageUrl,
+                  buildingHoverImage,
+                  buildingName,
+                  city,
+                },
+                index
+              ) => (
+                <Link
+                  key={index}
+                  href={`/projects/${btoa(id)}`}
+                  className="project_card"
+                >
+                  <div
+                    onClick={() => localStorage.setItem("cameFrom", "home")}
+                    className="project-card flex flex-col-reverse justify-center items-center md:items-start md:flex-row md:justify-center gap-3 bldngCard"
                   >
-                    <div onClick={()=>localStorage.setItem('cameFrom', 'home')} className="project-card flex flex-col-reverse justify-center items-center md:items-start md:flex-row md:justify-center gap-3 bldngCard">
-                      <div className="flex gap-2 items-center md:flex-col w-full md:w-2/5 justify-end">
-                        <div className="flex md:justify-end w-full">
-                          <div className="flex justify-left md:justify-center flex-col text-left md:text-right">
-                            <div className="text-[1.2rem] text-white font-semibold bldgName md:opacity-1">
-                              {buildingName}
-                            </div>
-                            <div className="text-[0.8rem] hover:text-white text-gray-500 ">
-                              {city}
-                            </div>
+                    <div className="flex gap-2 items-center md:flex-col w-full md:w-2/5 justify-end">
+                      <div className="flex md:justify-end w-full">
+                        <div className="flex justify-left md:justify-center flex-col text-left md:text-right">
+                          <div className="text-[1.2rem] text-white font-semibold bldgName md:opacity-1">
+                            {buildingName}
+                          </div>
+                          <div className="text-[0.8rem] hover:text-white text-gray-500">
+                            {city}
                           </div>
                         </div>
                       </div>
-                      <div className="w-full flex justify-center  md:justify-start md:w-3/5">
-                        <div className="relative w-[350px] h-[350px] overflow-hidden buildingImageContainer border-none">
-                          <Image
-                            src={buildingImageUrl}
-                            className={`w-full ${
-                              buildingHoverImage ? " first-building-image" : ""
+                    </div>
+                    <div className="w-full flex justify-center md:justify-start md:w-3/5">
+                      <div className="relative w-[350px] h-[350px] overflow-hidden buildingImageContainer border-none">
+                        <Image
+                          src={buildingImageUrl}
+                          className={`w-full ${buildingHoverImage ? " first-building-image" : ""
                             } h-full object-contain transition-opacity duration-300 ease-in-out`}
+                          alt={`${buildingName} ${city}`}
+                          width={350}
+                          height={350}
+                        />
+                        {buildingHoverImage && (
+                          <Image
+                            src={buildingHoverImage}
+                            className="w-full h-full object-contain opacity-0 transition-opacity duration-300 ease-in-out hover:opacity-100 absolute top-0 left-0"
                             alt={`${buildingName} ${city}`}
                             width={350}
                             height={350}
                           />
-                          {buildingHoverImage && (
-                            <Image
-                              src={buildingHoverImage}
-                              className="w-full h-full object-contain opacity-0 transition-opacity duration-300 ease-in-out hover:opacity-100 absolute top-0 left-0"
-                              alt={`${buildingName} ${city}`}
-                              width={350}
-                              height={350}
-                            />
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
-                  </Link>
-                )
+                  </div>
+                </Link>
               )
-            : ""}
+            )}
         </div>
         <Footer />
       </main>
