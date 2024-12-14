@@ -1,25 +1,37 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { usePathname } from 'next/navigation'
 import { useState } from "react";
 
 export default function Header({ theme = "dark-theme", hideLogo, backNav }) {
   const [showLinks, setShowLinks] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname()
 
   const toggleLinks = () => {
     setShowLinks(!showLinks);
   };
 
+  const goBack = () => {
+    router.back();
+  }
+
+  const shouldBeFullWidth = (path) => {
+    if (path.includes("projects")) {
+      return true;
+    }
+  }
+
   return (
-    <div
-      className={`fixed top-0 flex justify-between items-center left-0 right-0 m-auto w-full md:w-full z-40 header mb-2 min-h-14 bg-black`}
-    >
-      <div className="w-full page-section flex justify-between items-center">
+    <div className={`fixed top-0 flex items-center w-screen z-40 mb-2 min-h-14 max-h-[100px] bg-black`}>
+      <div className={`flex justify-between items-center w-full  max-h-[100px] ${shouldBeFullWidth(pathname) && 'min-w-[100vw]'} page-section`}>
         {backNav && (
-          <Link
-            title="Back to Project page"
-            href={backNav ?? ""}
-            className="absolute top-1 left-4 md:left-40 text-white z-50 flex gap-1 bg-black p-2 rounded-sm opacity-50 hover:opacity-100"
+          <button
+            title="Go back"
+            onClick={goBack}
+            className="text-white z-50 bg-black p-2 rounded-sm opacity-50 hover:opacity-100"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -38,13 +50,13 @@ export default function Header({ theme = "dark-theme", hideLogo, backNav }) {
               <path d="M5 12l6 6" />
               <path d="M5 12l6 -6" />
             </svg>
-          </Link>
+          </button>
         )}
 
         {!hideLogo ? (
-          <Link href="/" className="bg-black bg-opacity-50 p-2 rounded-sm">
+          <Link href="/" className="bg-black bg-opacity-50 h-[100px] max-h-[100px] p-2 rounded-sm">
             <Image
-              className="filter brightness-200"
+              className="filter brightness-200 h-[100px]"
               src={`/images/logo/logo_white.svg`}
               width={100}
               height={50}

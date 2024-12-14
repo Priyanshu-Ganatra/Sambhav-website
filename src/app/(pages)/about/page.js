@@ -60,8 +60,8 @@ export default function Test() {
 
   return (
     <>
-      <main className="dark-theme pt-24 flex flex-col justify-center items-start gap-4 h-[90%] overflow-auto text-white root">
-        <div className="flex md:items-center mt-10 relative w-full min-h-screen h-full overflow-auto justify-center">
+      <main className="dark-theme pt-[120px] flex flex-col justify-center items-start gap-4 overflow-auto text-white ">
+        <div className="flex md:items-center relative w-full overflow-auto justify-center">
           <div className="flex flex-col justify-center relative w-full">
             <AnimationAbout aboutData={aboutData} currentIndex={currentIndex} />
           </div>
